@@ -1,0 +1,87 @@
+Sub StockMarketAnalyst()
+    ' for loop cycle through worksheets
+    For Each ws In Worksheets
+        'stock ticker location
+        Dim SummaryRow As Integer
+        SummaryRow = 2
+        'ticker name and volume
+        Dim Ticker As String
+        ' set variables for open and close price
+        Dim OpenPrice As Double
+        Dim ClosePrice As Double
+        'set variables for yearly and percent change
+        Dim YearlyChange As Double
+        Dim PercentChange As Double
+        'set variable of date open prie
+        Dim PriceRow As Long
+        PriceRow = 2
+        'empty bucket
+        Total = 0
+
+        'dislay headers
+        ws.Range("I1").Value = "Ticker"
+        ws.Range("J1").Value = "Yearly Change"
+        ws.Range("K1").Value = "Percent Change"
+        ws.Range("L1").Value = "Total Stock Volume"
+
+        'count to last row
+        LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+        
+            'loop column A, stock names and add stock volume
+            For i = 2 To LastRow:
+                'if statement compare cells(i, 1).value with cells(i+1, 1).value
+                If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+                
+                    'set Ticker name
+                    Ticker = ws.Cells(i, 1).Value
+    
+                    'add values to stock volume
+                    Total = Total + ws.Range("G" & i).Value
+                    
+                    'display ticker symbol name
+                    ws.Range("I" & SummaryRow).Value = Ticker
+
+                    'display total stock volume
+                    ws.Range("L" & SummaryRow).Value = Total
+                    
+                    
+                    'calculate yearly and percent change
+                    OpenPrice = ws.Range("C" & PriceRow).Value
+                    ClosePrice = ws.Range("F" & i).Value
+                    YearlyChange = (ClosePrice - OpenPrice)
+                    
+                    
+                        If OpenPrice = 0 Then
+                        PercentChange = 0
+                        
+                        Else
+                        PercentChange = (YearlyChange / OpenPrice)
+                            
+                        End If
+                    'display values yearly and percent change, plus color formatting
+                    ws.Range("J" & SummaryRow).Value = YearlyChange
+                    ws.Range("K" & SummaryRow).Value = PercentChange
+                    ws.Range("K" & SummaryRow).NumberFormat = "0.00%"
+
+                        'Conditional formatting, color
+                        If ws.Range("J" & SummaryRow).Value > 0 Then
+                            ws.Range("J" & SummaryRow).Interior.ColorIndex = 4
+                        Else
+                            ws.Range("J" & SummaryRow).Interior.ColorIndex = 3
+                        End If
+
+                    'add one count to the summary row
+                    SummaryRow = SummaryRow + 1
+                    PriceRow = i + 1
+
+                    'reset stock volume back to 0
+                     Total = 0
+                     
+                    
+                End If
+                
+            Next i
+            
+    Next ws
+    
+End Sub
